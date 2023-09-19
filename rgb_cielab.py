@@ -1,7 +1,6 @@
 import math
 from PIL import Image
 
-
 def convert_rgb_to_cielab(image):
     width, height = image.size
     cielab_image = Image.new('LAB', (width, height))
@@ -18,8 +17,6 @@ def convert_rgb_to_cielab(image):
             cielab_image.putpixel((i, j), (L, a, b))
     
     return cielab_image
-
-import math
 
 def rgb_to_cielab(r, g, b):
     r, g, b = float(r) / 255, float(g) / 255, float(b) / 255

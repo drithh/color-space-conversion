@@ -1,4 +1,3 @@
-import colorsys
 from PIL import Image
 
 def rgb_to_yiq(r, g, b):

@@ -1,5 +1,5 @@
 from PIL import Image
-from skimage.color import rgb2lab
+
 def convert_rgb_to_cmyk(image):
     width, height = image.size
     cmyk_image = Image.new('CMYK', (width, height))
