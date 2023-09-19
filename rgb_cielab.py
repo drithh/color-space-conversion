@@ -19,33 +19,36 @@ def convert_rgb_to_cielab(image):
     return cielab_image
 
 def rgb_to_cielab(r, g, b):
+    # Convert RGB values to the range [0, 1]
     r, g, b = float(r) / 255, float(g) / 255, float(b) / 255
 
-    if r > 0.04045:
-        r = ((r + 0.055) / 1.055) ** 2.4
-    else:
-        r = r / 12.92
-
-    if g > 0.04045:
-        g = ((g + 0.055) / 1.055) ** 2.4
-    else:
-        g = g / 12.92
-
-    if b > 0.04045:
-        b = ((b + 0.055) / 1.055) ** 2.4
-    else:
-        b = b / 12.92
+    # Apply the gamma correction to each channel
+    r = gamma_correction(r)
+    g = gamma_correction(g)
+    b = gamma_correction(b)
 
     r, g, b = r * 100, g * 100, b * 100
 
+    X, Y, Z = rgb_to_xyz(r, g, b)
+
+    X, Y, Z = normalize_xyz(X, Y, Z)
+
+    L, a, b = xyz_to_cielab(X, Y, Z)
+    return L, a, b
+
+def gamma_correction(value):
+    if value > 0.04045:
+        return ((value + 0.055) / 1.055) ** 2.4
+    else:
+        return value / 12.92
+
+def rgb_to_xyz(r, g, b):
     X = r * 0.4124 + g * 0.3576 + b * 0.1805
     Y = r * 0.2126 + g * 0.7152 + b * 0.0722
     Z = r * 0.0193 + g * 0.1192 + b * 0.9505
+    return round(X, 4), round(Y, 4), round(Z, 4)
 
-    X = round(X, 4)
-    Y = round(Y, 4)
-    Z = round(Z, 4)
-
+def normalize_xyz(X, Y, Z):
     X = float(X) / 94.811
     Y = float(Y) / 100.0
     Z = float(Z) / 108.883
@@ -64,16 +67,13 @@ def rgb_to_cielab(r, g, b):
         Z = math.pow(Z, 1.0 / 3)
     else:
         Z = (7.787 * Z) + (16 / 116)
+    return X, Y, Z
 
+def xyz_to_cielab(X, Y, Z):
     L = (116 * Y) - 16
     a = 500 * (X - Y)
     b = 200 * (Y - Z)
-
-    L = round(L, 5)
-    a = round(a, 5)
-    b = round(b, 5)
-    
-    return L, a, b
+    return round(L, 5), round(a, 5), round(b, 5)
 
 def set_cielab(image, input_L=None, input_a=None, input_b=None):
     width, height = image.size
